@@ -1,5 +1,7 @@
 # tropic-loadingscreen
 
+support: https://dsc.gg/tropicgalxy
+
 config to your liking, some preset themes are set in the themes.txt file
 
 MAKE SURE YOUR LOGO IS CALLED logo.png WHEN YOU ADD IT OR IT WILL NOT WORK
