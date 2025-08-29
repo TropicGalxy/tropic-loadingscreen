@@ -2,6 +2,8 @@
 
 config to your liking, some preset themes are set in the themes.txt file
 
+MAKE SURE YOUR LOGO IS CALLED logo.png WHEN YOU ADD IT OR IT WILL NOT WORK
+
 blue
 <img width="2509" height="1277" alt="Screenshot 2025-08-29 122409" src="https://github.com/user-attachments/assets/425ec571-29a4-4c94-8f20-e8e04f7eafba" />
 
