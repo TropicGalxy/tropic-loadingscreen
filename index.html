@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>tropic loading screen</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous"/>
+  <script src="config.js"></script>
+  <style>
+    body {
+      background: linear-gradient(120deg, #0f172a, #1e293b, #0f172a);
+      background-size: 300% 300%;
+      animation: gradientShift 12s ease infinite;
+      overflow: hidden;
+      font-family: 'Rubik', sans-serif;
+    }
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .progress-bar { transition: width 0.4s ease-in-out; }
+    .fade-in { animation: fadeIn 1.2s ease-in-out forwards; opacity: 0; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .streak {
+      position: absolute;
+      width: 220%;
+      height: 3px;
+      top: -25%;
+      left: -90%;
+      animation: moveStreak 16s linear infinite;
+    }
+    @keyframes moveStreak {
+      from { transform: translate(-30%, -30%) rotate(-25deg); }
+      to { transform: translate(120%, 120%) rotate(-25deg); }
+    }
+    .particle {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      animation: float 14s ease-in-out infinite;
+    }
+    @keyframes float {
+      0% { transform: translateY(0) translateX(0); opacity: 0.4; }
+      50% { transform: translateY(-50px) translateX(25px); opacity: 1; }
+      100% { transform: translateY(0) translateX(0); opacity: 0.4; }
+    }
+    .progress-container {
+      position: relative;
+      height: 1.5rem;
+      font-size: 13px;
+      font-weight: 600;
+    } 
+    button {
+     transition: color 0.3s ease;
+    }
+    button:hover {
+     color: var(--buttonHighlight, #60a5fa);
+    }
+
+    #volumeControl {
+      appearance: none;
+      width: 10rem;
+      height: 8px;
+      border-radius: 9999px;
+      background: linear-gradient(
+      to right, 
+      var(--volumeFrom, #60a5fa) var(--value, 50%), 
+      var(--volumeTo, #374151) var(--value, 50%)
+    );
+      outline: none;
+      cursor: pointer;
+    }
+    #volumeControl::-webkit-slider-thumb {
+     appearance: none;
+     width: 16px;
+     height: 16px;
+     border-radius: 50%;
+     background: rgb(88, 88, 88); 
+     border: 2px solid #2a2d38ff;
+     cursor: pointer;
+    }
+
+    #volumeControl::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: rgb(2, 148, 51); 
+      border: 2px solid #474242;
+      cursor: pointer;
+    }
+    #volumeControl::-moz-range-track {
+      height: 8px;
+      border: none;
+      border-radius: 9999px;
+      background: transparent;
+    }
+    #visualizer {
+      display: block;
+      width: 100%;
+      height: 80px;
+    }
+  </style>
+</head>
+<body class="text-white relative h-screen">
+
+  <div class="absolute top-10 left-1/2 -translate-x-1/2 fade-in">
+    <img id="serverLogo" src="logo.png" alt="Server Logo" class="w-32 h-32 object-contain drop-shadow-lg rounded-full border-4">
+  </div>
+
+  <div class="w-[80%] max-w-5xl text-center fade-in absolute top-[25%] left-1/2 -translate-x-1/2">
+    <h1 id="serverName" class="text-5xl font-bold tracking-wide mb-2">Your Server</h1>
+    <p class="text-base opacity-80">Loading, please wait...</p>
+    <div class="w-full mt-4 relative">
+      <div class="bg-gray-700 rounded-full shadow-lg overflow-hidden h-6 relative flex items-center justify-center">
+        <div id="progress" class="progress-bar h-full rounded-full shadow-lg absolute left-0 top-0" style="width:0%"></div>
+        <span id="progressText" class="relative z-10 text-white font-semibold">0%</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="fade-in absolute top-[50%] left-1/2 -translate-x-1/2">
+    <div class="flex flex-col items-center bg-gray-900 bg-opacity-80 p-5 rounded-2xl shadow-xl w-[26rem] border border-gray-700 space-y-3">
+      <p id="currentSong" class="text-sm font-semibold text-grey-300">Now Playing</p>
+      <canvas id="visualizer" class="w-full h-20"></canvas>
+      <div class="w-full">
+        <div class="bg-gray-700 rounded-full h-2 relative">
+          <div id="songProgress" class="h-2 w-0 rounded-full"></div>
+        </div>
+        <div class="flex justify-between text-xs text-gray-400 mt-1">
+          <span id="currentTime">0:00</span>
+          <span id="songDuration">0:00</span>
+        </div>
+      </div>
+      <div class="flex items-center justify-center space-x-6 text-xl text-gray-300 -mt-2">
+      <button id="prevSong" class=" transition"><i class="fa-solid fa-backward"></i></button>
+      <button id="playPause" class="w-12 h-12 flex items-center justify-center text-2xl text-white  transition"><i class="fa-solid fa-pause"></i></button>
+      <button id="nextSong" class=" transition"><i class="fa-solid fa-forward"></i></button>
+     </div>
+
+      <div class="w-full flex items-center justify-center gap-3 text-gray-300">
+        <i class="fa-solid fa-volume-low"></i>
+        <input id="volumeControl" type="range" min="0" max="1" step="0.01" value="0.5">
+        <i class="fa-solid fa-volume-high"></i>
+        <span id="volumePercent" class="text-sm font-semibold w-10 text-center">50%</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="fade-in absolute top-[85%] left-1/2 -translate-x-1/2">
+    <p id="tipText" class="px-5 py-2 rounded-lg font-semibold shadow-lg inline-block bg-gray-900 bg-opacity-70">
+      Welcome to the server!
+    </p>
+  </div>
+
+  <div id="footer" class="fixed bottom-2 left-1/2 -translate-x-1/2 text-center text-[10px] opacity-70"></div>
+
+  <div class="streak" style="animation-delay:0s;"></div>
+  <div class="streak" style="animation-delay:6s;"></div>
+  <div class="streak" style="animation-delay:12s;"></div>
+  <div class="streak" style="animation-delay:18s;"></div>
+  <div class="particle" style="top:30%;left:20%;animation-delay:0s;"></div>
+  <div class="particle" style="top:50%;left:60%;animation-delay:3s;"></div>
+  <div class="particle" style="top:70%;left:40%;animation-delay:6s;"></div>
+  <div class="particle" style="top:20%;left:75%;animation-delay:9s;"></div>
+  <div class="particle" style="top:80%;left:15%;animation-delay:12s;"></div>
+
+  <audio id="audioPlayer"></audio>
+
+<script>
+ const { colors, songs, tips, server, footer: footerCfg, music } = window.LoadingConfig
+
+ const progressBar = document.getElementById("progress")
+ const progressText = document.getElementById("progressText")
+ const songProgress = document.getElementById("songProgress")
+ const tipText = document.getElementById("tipText")
+ const footerEl = document.getElementById("footer")
+ const serverName = document.getElementById("serverName")
+ const audioPlayer = document.getElementById("audioPlayer")
+ const currentSongText = document.getElementById("currentSong")
+ const currentTimeEl = document.getElementById("currentTime")
+ const songDurationEl = document.getElementById("songDuration")
+ const playPauseBtn = document.getElementById("playPause").querySelector("i")
+ const volumeControl = document.getElementById("volumeControl")
+ const volumePercent = document.getElementById("volumePercent")
+ const serverLogo = document.getElementById("serverLogo")
+
+ serverName.textContent = server.name
+ progressBar.style.background = `linear-gradient(to right, ${colors.progressFrom}, ${colors.progressTo})`
+ songProgress.style.background = `linear-gradient(to right, ${colors.songFrom}, ${colors.songTo})`
+  
+ document.querySelectorAll("button").forEach(btn => {
+  btn.style.setProperty("--buttonHighlight", colors.buttonHighlight)
+ })
+ document.querySelectorAll(".streak").forEach(s => {
+   s.style.background = `linear-gradient(90deg, transparent, ${colors.streak}, transparent)`
+ })
+ if (footerCfg.show) { footerEl.textContent = footerCfg.text; footerEl.style.color = colors.footerText }
+ serverName.textContent = server.name
+ if (serverLogo) {
+  serverLogo.style.borderColor = colors.logoOutline || "#3b82f6"
+  serverLogo.style.boxShadow = `0 0 20px 0 ${colors.logoOutline || "#3b82f6"}40`
+}
+
+let tipIndex = 0
+setInterval(() => {
+  if (!tips || tips.length === 0) return
+  tipIndex = (tipIndex + 1) % tips.length
+  tipText.textContent = tips[tipIndex]
+}, 5000)
+
+window.addEventListener("message", (event) => {
+  const data = event.data
+  if (!data || !data.eventName) return
+  if (data.eventName === "loadProgress") {
+    const p = Math.floor((data.loadFraction ?? 0) * 100)
+    progressBar.style.width = p + "%"
+    progressText.textContent = p + "%"
+  }
+  if (data.eventName === "onLogLine" && data.message.includes("Done loading map")) {
+    progressBar.style.width = "100%"
+    progressText.textContent = "100%"
+  }
+})
+
+let currentSongIndex = music.shuffle ? Math.floor(Math.random() * songs.length) : 0
+let isPlaying = false
+
+function loadSong(index) {
+  const song = songs[index]
+  if (!song) return
+  audioPlayer.src = song.url
+  currentSongText.textContent = `Now Playing: ${song.title}`
+  if (music.autoplay) {
+    audioPlayer.play().catch(() => {})
+  }
+}
+
+audioPlayer.addEventListener("timeupdate", () => {
+  if (audioPlayer.duration) {
+    const progressPercent = (audioPlayer.currentTime / audioPlayer.duration) * 100
+    songProgress.style.width = `${progressPercent}%`
+    const ct = Math.floor(audioPlayer.currentTime), dt = Math.floor(audioPlayer.duration)
+    currentTimeEl.textContent = `${Math.floor(ct/60)}:${String(ct%60).padStart(2,"0")}`
+    songDurationEl.textContent = `${Math.floor(dt/60)}:${String(dt%60).padStart(2,"0")}`
+  }
+})
+
+audioPlayer.addEventListener("play", () => {
+  playPauseBtn.classList.remove("fa-play")
+  playPauseBtn.classList.add("fa-pause")
+  isPlaying = true
+})
+
+audioPlayer.addEventListener("pause", () => {
+  playPauseBtn.classList.remove("fa-pause")
+  playPauseBtn.classList.add("fa-play")
+  isPlaying = false
+})
+
+audioPlayer.addEventListener("ended", () => {
+  playPauseBtn.classList.remove("fa-pause")
+  playPauseBtn.classList.add("fa-play")
+  isPlaying = false
+})
+
+document.getElementById("playPause").addEventListener("click", () => {
+  if (audioPlayer.paused) {
+    audioPlayer.play()
+  } else {
+    audioPlayer.pause()
+  }
+})
+
+document.getElementById("nextSong").addEventListener("click", () => {
+  currentSongIndex = (currentSongIndex + 1) % songs.length
+  loadSong(currentSongIndex)
+})
+
+document.getElementById("prevSong").addEventListener("click", () => {
+  currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length
+  loadSong(currentSongIndex)
+})
+
+function updateVolumeBar() {
+  const val = volumeControl.value * 100
+  volumeControl.style.setProperty("--value", val + "%")
+  volumeControl.style.setProperty("--volumeFrom", colors.volumeFrom)
+  volumeControl.style.setProperty("--volumeTo", colors.volumeTo)
+  audioPlayer.volume = volumeControl.value
+  volumePercent.textContent = Math.round(volumeControl.value * 100) + "%"
+}
+volumeControl.addEventListener("input", updateVolumeBar)
+audioPlayer.volume = music.startVolume
+volumeControl.value = music.startVolume
+updateVolumeBar()
+
+const canvas = document.getElementById("visualizer")
+const ctx = canvas.getContext("2d")
+function resizeCanvas() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight }
+resizeCanvas()
+window.addEventListener("resize", resizeCanvas)
+
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)()
+const source = audioCtx.createMediaElementSource(audioPlayer)
+const analyser = audioCtx.createAnalyser()
+analyser.fftSize = 128
+const bufferLength = analyser.frequencyBinCount
+const dataArray = new Uint8Array(bufferLength)
+source.connect(analyser)
+analyser.connect(audioCtx.destination)
+
+function draw() {
+  requestAnimationFrame(draw)
+  analyser.getByteFrequencyData(dataArray)
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+  const barWidth = (canvas.width / bufferLength) * 2.5
+  let x = 0
+  for (let i = 0; i < bufferLength; i++) {
+    const barHeight = dataArray[i] / 2
+    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height)
+    gradient.addColorStop(0, colors.visualizerTop)
+    gradient.addColorStop(1, colors.visualizerBottom)
+    ctx.fillStyle = gradient
+    ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight)
+    x += barWidth + 1
+  }
+}
+draw()
+
+document.body.addEventListener("click", () => {
+  if (audioCtx.state === "suspended") audioCtx.resume()
+  if (!isPlaying && music.autoplay) {
+    audioPlayer.play().catch(() => {})
+  }
+})
+
+loadSong(currentSongIndex)
+</script>
+
+</body>
+</html>

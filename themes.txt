@@ -1,0 +1,65 @@
+you can copy and paste whatever theme from here you want, or make your own
+
+blue
+colors: {
+    progressFrom: "#60a5fa",
+    progressTo: "#3b82f6",
+    songFrom: "#60a5fa",
+    songTo: "#3b82f6",
+    volumeFrom: "#60a5fa", 
+    volumeTo: "#2a2d38ff",      
+    logoOutline: "#3b82f6",
+    streak: "rgba(96,165,250,0.6)",
+    footerText: "#cbd5e1",
+    visualizerTop: "#60a5fa",     
+    visualizerBottom: "#1e40af",
+    buttonHighlight: "#60a5fa"   
+  },
+
+green
+colors: {
+  progressFrom: "#4ade80", 
+  progressTo: "#16a34a",  
+  songFrom: "#22c55e",
+  songTo: "#15803d",
+  volumeFrom: "#4ade80",
+  volumeTo: "#2a2d38ff",
+  logoOutline: "#16a34a",
+  streak: "rgba(34,197,94,0.6)",
+  footerText: "#d1fae5",
+  visualizerTop: "#4ade80",
+  visualizerBottom: "#065f46",
+  buttonHighlight: "#22c55e"
+  },
+
+purple
+colors: {
+  progressFrom: "#a78bfa",
+  progressTo: "#7c3aed",
+  songFrom: "#8b5cf6",
+  songTo: "#5b21b6",
+  volumeFrom: "#a78bfa",
+  volumeTo: "#2a2d38ff",
+  logoOutline: "#7c3aed",
+  streak: "rgba(167,139,250,0.6)",
+  footerText: "#ddd6fe",
+  visualizerTop: "#a78bfa",
+  visualizerBottom: "#312e81",
+  buttonHighlight: "#8b5cf6"
+},
+
+red
+colors: {
+  progressFrom: "#f87171",
+  progressTo: "#dc2626",
+  songFrom: "#ef4444",
+  songTo: "#991b1b",
+  volumeFrom: "#f87171",
+  volumeTo: "#2a2d38ff",
+  logoOutline: "#dc2626",
+  streak: "rgba(248,113,113,0.6)",
+  footerText: "#fecaca",
+  visualizerTop: "#f87171",
+  visualizerBottom: "#7f1d1d",
+  buttonHighlight: "#ef4444"
+},
